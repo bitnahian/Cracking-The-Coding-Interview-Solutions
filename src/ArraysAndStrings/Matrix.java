@@ -88,7 +88,7 @@ public class Matrix {
             for(int j = 0; j < column; ++j)
             {
                 str.append(matrix[i][j]);
-                str.append(" ");
+                str.append("\t");
             }
             str.append("\n");
         }
