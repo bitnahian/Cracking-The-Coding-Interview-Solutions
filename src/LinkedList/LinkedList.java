@@ -1,5 +1,7 @@
 package LinkedList;
 
+import sun.awt.image.ImageWatched;
+
 import java.util.HashMap;
 
 public class LinkedList {
@@ -8,71 +10,78 @@ public class LinkedList {
     public int length;
 
     public LinkedList() {
-        this.head = new Node(null);
-        this.tail = new Node(null);
-
-        this.head.next = this.tail;
-        this.tail.prev = this.head;
+        this.head = null;
+        this.tail = null;
+        this.length = 0;
     }
 
-    public LinkedList(int d) {
-        Node n = new Node(d);
+    public LinkedList(Node head) {
+        this.head = head;
+        Node n = head;
 
-        this.head = new Node(null);
-        this.tail = new Node(null);
+        while(n.next != null) {
+            n = n.next;
+        }
 
-        this.head.next = n;
-        this.tail.prev = n;
-
-        this.length = 0;
-
+        this.tail = n;
     }
 
     public Node getHead() {
-        return this.head.next;
+        return this.head;
     }
 
     public Node getTail() {
-        return this.tail.prev;
+        return this.tail;
     }
 
     public void appendToHead(int d) {
         Node start = new Node(d);
-        Node firstNode = this.head.next;
+
+        if(this.head == null && this.tail == null) {
+            this.head = start;
+            this.tail = start;
+            return;
+        }
+
+        Node firstNode = this.head;
         firstNode.prev = start;
-        start.prev = this.head;
         start.next = firstNode;
-        this.head.next = start;
+        this.head = start;
         this.length++;
     }
 
 
     public void appendToTail(int d) {
         Node end = new Node(d);
-        Node lastNode = this.tail.prev;
+        if(this.head == null && this.tail == null) {
+            this.head = end;
+            this.tail = end;
+            return;
+        }
+
+        Node lastNode = this.tail;
         lastNode.next = end;
-        end.next = this.tail;
         end.prev = lastNode;
-        this.tail.prev = end;
+        this.tail = end;
         this.length++;
     }
 
     public void removeNode(int d) {
-        if(this.head.next.data == d) {
-            this.head.next = this.head.next.next;
-            this.head.next.prev = this.head;
+        if(this.head.data == d) {
+            this.head = this.head.next;
+            this.head.prev = null;
             this.length--;
             return;
         }
 
-        if(this.tail.prev.data == d) {
-            this.tail.prev = this.tail.prev.prev;
-            this.tail.prev.next = this.tail;
+        if(this.tail.data == d) {
+            this.tail = this.tail.prev;
+            this.tail.next = null;
             this.length--;
             return;
         }
 
-        Node n = this.head.next;
+        Node n = this.head;
 
         while(n.next != null) {
             if(n.next.data == d) {
@@ -85,30 +94,15 @@ public class LinkedList {
         }
     }
 
-    public Node removeHead() {
-        Node head = this.head.next;
-        this.head.next = head.next;
-        this.head.next.prev = this.head;
-        this.length--;
-        return head;
-    }
-
-    public Node removeTail() {
-        Node tail = this.tail.prev;
-        this.tail.prev = tail.prev;
-        this.tail.prev.next = this.tail;
-        this.length--;
-        return tail;
-    }
 
 
     // O(1) space but O(n^2) run time
     public void removeDupsWithRunner() {
-        Node current = this.head.next;
+        Node current = this.head;
 
-        while(!current.equals(this.tail)) {
+        while(current != null) {
             Node runner = current;
-            while(!runner.equals(this.tail)) {
+            while(runner.next != null) {
                 if(runner.next.data == current.data) {
                     runner.next = runner.next.next;
                     this.length--;
@@ -125,12 +119,10 @@ public class LinkedList {
     public void removeDups() {
         HashMap<Integer, Integer> map = new HashMap<>();
 
-        Node n = this.head.next;
+        Node n = this.head;
 
         // Find count of all characters
         while(n.next != null) {
-            if(n.data == null)
-                break;
             if(map.containsKey(n.data))
                 map.put(n.data, map.get(n.data)+1);
             else
@@ -138,11 +130,9 @@ public class LinkedList {
             n = n.next;
         }
 
-        n = this.head.next;
+        n = this.head;
 
         while(n.next != null) {
-            if(n.data==null)
-                break;
             if(map.get(n.data) > 1){
                 // Remove this node and make count go down
                 n.prev.next = n.next;
@@ -158,15 +148,18 @@ public class LinkedList {
     @Override
     public String toString() {
 
+        if(this.head == null)
+            return "[]";
+
         if(this.head.equals(this.tail))
         {
             return "[ " + this.head.data + " ]";
         }
 
         StringBuilder builder = new StringBuilder();
-        Node n = this.head.next;
+        Node n = this.head;
         builder.append("[ ");
-        while(n.next != null) {
+        while(n != null) {
             builder.append(n.data);
             builder.append(", ");
             n = n.next;
@@ -176,4 +169,103 @@ public class LinkedList {
 
         return builder.toString();
     }
+
+    public Node kthToLast(int k) {
+        Index index = new Index();
+
+        return kthToLast(this.getHead(), k, index);
+    }
+
+    public Node kthToLast(Node node, int k, Index idx) {
+        if(node == null)
+            return null;
+
+        Node newNode = this.kthToLast(node.next, k, idx);
+        idx.value++;
+
+        if(idx.value == k)
+            return node;
+
+        return newNode;
+    }
+
+    public class Index {
+        public int value = 0;
+    }
+
+    public static Node parition(Node node, int x) {
+
+        Node beforeStart = null;
+        Node beforeEnd = null;
+        Node afterStart = null;
+        Node afterEnd = null;
+
+        while(node != null) {
+            Node next = node.next;
+            node.next = null;
+            node.prev = null;
+//            System.out.println("here");
+            if(node.data < x) {
+                if(beforeStart == null) {
+                    beforeStart = node;
+                    beforeEnd = beforeStart;
+                }
+                else {
+                    beforeEnd.next = node;
+                    node.prev = beforeEnd;
+                    beforeEnd = node;
+                }
+            }
+            else {
+                if(afterStart == null) {
+                    afterStart = node;
+                    afterEnd = afterStart;
+                }
+                else{
+                    afterEnd.next = node;
+                    node.prev = afterEnd;
+                    afterEnd = node;
+                }
+            }
+            node = next;
+        }
+
+        if(beforeStart == null)
+            return afterStart;
+
+        // Merge before list and after list
+        beforeEnd.next = afterStart;
+        afterStart.prev = beforeEnd;
+
+        return beforeStart;
+    }
+
+    public static int changeToNumber(Node node, int level) {
+        if(node == null)
+            return 0;
+
+        return (int) Math.pow(10, level)*node.data + changeToNumber(node.next, level+1);
+
+    }
+
+
+    public static Node sumLists(Node n1, Node n2, int carry) {
+
+        if(n1 == null || n2 == null) {
+            return (carry > 0) ? new Node(1) : null;
+        }
+
+        int nData = n1.data+n2.data + carry;
+        carry = (nData >= 10) ? 1 : 0;
+        nData = nData%10;
+
+        Node node = new Node(nData);
+
+        node.next = sumLists(n1.next, n2.next, carry);
+
+        return node;
+
+    }
 }
+
+

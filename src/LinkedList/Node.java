@@ -10,4 +10,9 @@ public class Node {
         this.data = d;
     }
 
+    @Override
+    public String toString() {
+        return this.data.toString();
+    }
 }
+
