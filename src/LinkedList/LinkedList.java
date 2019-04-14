@@ -1,7 +1,5 @@
 package LinkedList;
 
-import sun.awt.image.ImageWatched;
-
 import java.util.HashMap;
 
 public class LinkedList {
@@ -15,11 +13,13 @@ public class LinkedList {
         this.length = 0;
     }
 
+
     public LinkedList(Node head) {
         this.head = head;
         Node n = head;
 
         while(n.next != null) {
+            this.length++;
             n = n.next;
         }
 
@@ -32,6 +32,22 @@ public class LinkedList {
 
     public Node getTail() {
         return this.tail;
+    }
+
+    // Some stack operations
+    public Node pop(){
+        Node node = this.head;
+        if(this.head!=null)
+        {
+            this.head = this.head.next;
+            this.length--;
+        }
+
+        return node;
+    }
+
+    public void push(int d) {
+        this.appendToHead(d);
     }
 
     public void appendToHead(int d) {
@@ -265,6 +281,34 @@ public class LinkedList {
 
         return node;
 
+    }
+
+    public static boolean isPalindrome(LinkedList list) {
+        Node slow = list.getHead();
+        Node fast = list.getHead();
+
+        LinkedList stack = new LinkedList();
+
+        while(fast != null && fast.next != null) {
+            stack.push(slow.data.intValue());
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        if(fast != null) {
+            slow = slow.next;
+        }
+
+        while(slow != null) {
+            int top = stack.pop().data;
+
+            if(top != slow.data)
+                return false;
+
+            slow = slow.next;
+        }
+
+        return true;
     }
 }
 

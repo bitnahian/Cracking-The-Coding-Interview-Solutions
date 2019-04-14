@@ -174,4 +174,31 @@ public class LinkedListTest {
         assertEquals("[ 0, 0, 0, 1 ]", result.toString());
 
     }
+
+    @Test
+    public void testIsPalindrome(){
+        LinkedList l1 = new LinkedList();
+        l1.appendToTail(0);
+        l1.appendToTail(1);
+        l1.appendToTail(2);
+        l1.appendToTail(2);
+        l1.appendToTail(1);
+        l1.appendToTail(0);
+
+
+        assertTrue(LinkedList.isPalindrome(l1));
+
+        LinkedList l2 = new LinkedList();
+        l2.appendToTail(0);
+        l2.appendToTail(1);
+        l2.appendToTail(2);
+        l2.appendToTail(3);
+        l2.appendToTail(2);
+        l2.appendToTail(1);
+        l2.appendToTail(0);
+
+        assertTrue(LinkedList.isPalindrome(l2));
+
+
+    }
 }
